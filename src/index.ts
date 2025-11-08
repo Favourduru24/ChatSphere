@@ -9,6 +9,7 @@ import { errorMiddleware } from "./middlewares/errorHandler.middleware"
 import connectToDatabase from "./config/database.config"
 import passport from "passport"
 import "./config/passport.config"
+import routes from "./routes"
 const app = express()
 
 app.use(express.json())
@@ -27,8 +28,9 @@ app.get('/health', asyncHandler(async (req: Request, res: Response) => {
         message: 'Server is healthy'
      }) 
 }))
-
-app.use(errorMiddleware)
+ 
+   app.use('/api', routes)
+  app.use(errorMiddleware)
 
 app.listen(ENV.PORT, async() => {
       await connectToDatabase()
