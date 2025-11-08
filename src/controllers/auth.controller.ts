@@ -49,10 +49,11 @@ export const logoutController = asyncHandler(async (req: Request, res: Response)
 
 })
 
-// export const authStatusController = asyncHandler(async (req: Request, res: Response) => {
+export const authStatusController = asyncHandler(async (req: Request, res: Response) => {
+  const user = req.user
 
-//     return clearJwtAuthCookie(res).status(HTTPSTATUS.OK).json({
-//          message: 'User logout successfully!',
-//     })
-
-// })
+  return res.status(HTTPSTATUS.OK).json({
+     message: "Authenticated User",
+     user
+  })
+})
