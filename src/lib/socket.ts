@@ -105,3 +105,31 @@ export const initializeSocket = (httpServer: HTTPServer) => {
          io.to(`user:${participantId}`).emit("chat:new", chat)
       } 
     }
+
+    export const emitNewMessageToChatRoom = (
+      senderId: string, // userId that sent the message ,
+      chatId: string,
+      message: any
+    ) => {
+        const io = getIO()
+        const senderSocketId = onlineUsers.get(senderId)
+
+        if(senderSocketId) {
+           io.to(`chat:${chatId}`).except(senderSocketId).emit("message:new", message)
+        } else {
+            io.to(`chat:${chatId}`).emit("message:new", message)
+        }
+    }
+
+    export const emitLastMessageToParticipants = (
+       participantIds: string[],
+       chatId: string,
+       lastMessage: any
+    ) => {
+         const io = getIO()
+         const payload = {chatId, lastMessage}
+
+         for(const participantId of participantIds) {
+           io.to(`user:${participantId}`).emit("chat:update", payload)
+         }
+     }

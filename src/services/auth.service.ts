@@ -17,10 +17,12 @@ export const registerService = async (body: RegisterSchemaType, res: Response) =
 
     const hashPassword = await hashValue(password, 10)
 
-    const newUser = await UserModel.create({
+    const newUser = new UserModel({
         ...body,
         password: hashPassword
     })
+
+     await newUser.save()
 
      return newUser
 }

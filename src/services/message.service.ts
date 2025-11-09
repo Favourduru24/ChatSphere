@@ -2,9 +2,11 @@ import { Request, Response } from "express"
 import ChatModel from "../models/chat.model"
 import MessageModel from "../models/message.model"
 import cloudinary from "../config/cloudinary.config"
+import mongoose from "mongoose"
+import { emitLastMessageToParticipants, emitNewMessageToChatRoom } from "../lib/socket"
 
 export const sendMessageService = async (userId: string, res: Response, body:{
-     chatId?: string,
+     chatId: string,
      content?: string,
      image?: string,
      replyToId: string
@@ -51,7 +53,18 @@ export const sendMessageService = async (userId: string, res: Response, body:{
                  path: "sender", select: "name avatar" 
             }}
         ])
-
          
+        chat.lastMessage = newMessage._id as mongoose.Types.ObjectId
+        await chat.save()
+
+        //websocket emit the new message to the chat room
+
+        emitNewMessageToChatRoom(userId, chatId, newMessage)
+
+        //websocket emit the lastmessage to member (personnal room user)
+          const allParticipantIds = chat.participants.map((id) => id.toString())
+          
+         emitLastMessageToParticipants(allParticipantIds, chatId, newMessage)
+
         return {userMessage: newMessage, chat} 
     }

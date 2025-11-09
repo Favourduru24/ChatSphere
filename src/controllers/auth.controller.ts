@@ -11,7 +11,7 @@ export const registerController = asyncHandler(async (req: Request, res: Respons
 
    const user = await registerService(body, res)
 
-    const userId = user?._id as string
+    const userId = user._id as string
 
     return setJwtAuthCookie({
         res,
@@ -29,7 +29,7 @@ export const loginController = asyncHandler(async (req: Request, res: Response) 
 
    const user = await loginService(body, res)
 
-    const userId = user?._id as string
+    const userId = user._id as string
 
     return setJwtAuthCookie({
         res,

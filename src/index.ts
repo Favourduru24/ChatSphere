@@ -37,7 +37,7 @@ app.get('/health', asyncHandler(async (req: Request, res: Response) => {
 }))
  
   app.use('/api', routes)
-  app.use(errorMiddleware)
+//   app.use(errorMiddleware)
 
 server.listen(ENV.PORT, async() => {
       await connectToDatabase()
