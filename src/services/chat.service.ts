@@ -1,3 +1,4 @@
+import { emitNewChatToParticipant } from "../lib/socket"
 import ChatModel from "../models/chat.model"
 import MessageModel from "../models/message.model"
 import UserModel from "../models/user.model"
@@ -51,6 +52,14 @@ export const createChatService = async (
 
     //implement web socket
 
+    const populatedChat = await chat?.populate("participants", "name avatar")
+
+    const participantIdStrings = populatedChat?.participants?.map((p) => {
+        return p._id?.toString()
+    })
+
+    emitNewChatToParticipant(participantIdStrings, populatedChat)
+
     return chat
 }
 
@@ -95,5 +104,18 @@ export const createChatService = async (
          return {
             chat,
             messages
-         }
- }
+         }}
+
+  export const validateChatParticipant = async (chatId: string, userId: string) => {
+
+   const chat = await ChatModel.findOne({
+    _id: chatId,
+    participants: {
+        $in: [userId]
+    }
+   })
+    
+   if(!chat) throw new Error('User not a participant in chat')
+
+    return chat
+  }
