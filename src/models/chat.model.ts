@@ -4,7 +4,7 @@ import mongoose,{Schema, Document} from "mongoose";
      participants: mongoose.Types.ObjectId[],
      lastMessage: mongoose.Types.ObjectId,
      isGroup: boolean,
-     groupName: String,
+     groupName: string,
      createdBy: mongoose.Types.ObjectId,
      createdAt: Date,
      updatedAt: Date

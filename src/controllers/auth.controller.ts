@@ -5,29 +5,43 @@ import { loginService, registerService } from "../services/auth.service"
 import { clearJwtAuthCookie, setJwtAuthCookie } from "../utils/cookie"
 import { HTTPSTATUS } from "../config/http.config"
 
+// export const registerController = asyncHandler(async (req: Request, res: Response) => {
+
+//     const body = registerSchema.parse(req.body)
+
+//    const user = await registerService(body)
+
+//     const userId = user._id as string
+
+//     return setJwtAuthCookie({
+//         res,
+//         userId
+//     }).status(HTTPSTATUS.CREATED).json({
+//          message: 'User created successfully!',
+//          user
+//     })
+
+// })
+
 export const registerController = asyncHandler(async (req: Request, res: Response) => {
+  const body = registerSchema.parse(req.body);
+  const user = await registerService(body);
 
-    const body = registerSchema.parse(req.body)
+  const userId = user._id as string
 
-   const user = await registerService(body, res)
+  setJwtAuthCookie({ res, userId });
 
-    const userId = user._id as string
-
-    return setJwtAuthCookie({
-        res,
-        userId
-    }).status(HTTPSTATUS.CREATED).json({
-         message: 'User created successfully!',
-         user
-    })
-
-})
+  return res.status(HTTPSTATUS.CREATED).json({
+    message: "User created successfully!",
+    user,
+  });
+});
 
 export const loginController = asyncHandler(async (req: Request, res: Response) => {
 
     const body = loginSchema.parse(req.body)
 
-   const user = await loginService(body, res)
+   const user = await loginService(body)
 
     const userId = user._id as string
 

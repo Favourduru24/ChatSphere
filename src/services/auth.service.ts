@@ -1,49 +1,44 @@
 import { HTTPSTATUS } from "../config/http.config";
 import { Response } from "express";
-import UserModel from "../models/user.model";
+import UserModel, { UserDocument } from "../models/user.model";
 import { LoginSchemaType, RegisterSchemaType } from "../validators/auth.validator";
 import { compareValue, hashValue } from "../utils/bcrypt";
 
-export const registerService = async (body: RegisterSchemaType, res: Response) => {
+export const registerService = async (body: RegisterSchemaType): Promise<UserDocument> => {
+  const { email, password } = body;
 
-    const {email, password} = body
-    
-    const existingUser = await UserModel.findOne({email})
+  const existingUser = await UserModel.findOne({ email });
+  if (existingUser) {
+    throw Object.assign(new Error("User already exists"), { statusCode: HTTPSTATUS.BAD_REQUEST });
+  }
 
-    if(existingUser) return res.status(HTTPSTATUS.BAD_REQUEST).json({
-        message: 'User already exist',
-        success: false
-    })
+  const hashedPassword = await hashValue(password, 10);
 
-    const hashPassword = await hashValue(password, 10)
+  const newUser = new UserModel({
+    ...body,
+    password: hashedPassword,
+  });
 
-    const newUser = new UserModel({
-        ...body,
-        password: hashPassword
-    })
+  await newUser.save();
+  return newUser;
+};
 
-     await newUser.save()
-
-     return newUser
-}
-
-export const loginService = async (body: LoginSchemaType, res: Response) => {
+export const loginService = async (body: LoginSchemaType) : Promise<UserDocument> => {
 
     const {email, password} = body
      
     const user = await UserModel.findOne({email})
 
-    if(!user) return res.status(HTTPSTATUS.NOT_FOUND).json({
-        message: 'Email not found!',
-        success: false
-    })
+    if (!user) {
+    throw Object.assign(new Error("Email not found!"), { statusCode: HTTPSTATUS.NOT_FOUND });
+  }
 
-    const isPasswordValid = await compareValue(user.password, password)
       
-   if(!isPasswordValid) return res.status(HTTPSTATUS.BAD_REQUEST).json({
-        message: 'Unauthorized Invalid password',
-        success: false
-    })
+    const isPasswordValid = await compareValue(password, user.password);
+    
+  if (!isPasswordValid) {
+    throw Object.assign(new Error("Invalid password!"), { statusCode: HTTPSTATUS.BAD_REQUEST });
+  }
 
-    return user
+  return user;
 }

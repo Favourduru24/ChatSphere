@@ -5,12 +5,14 @@ import cloudinary from "../config/cloudinary.config"
 import mongoose from "mongoose"
 import { emitLastMessageToParticipants, emitNewMessageToChatRoom } from "../lib/socket"
 
-export const sendMessageService = async (userId: string, res: Response, body:{
-     chatId: string,
-     content?: string,
-     image?: string,
-     replyToId: string
-}, ) => {
+export const sendMessageService = async (userId: string,
+  body: {
+    chatId: string
+    content?: string
+    image?: string
+    replyToId?: string
+  },
+  req: Request, ) => {
 
       const {chatId, content, image, replyToId} = body
 
@@ -29,9 +31,9 @@ export const sendMessageService = async (userId: string, res: Response, body:{
             chatId
          })
 
-         if(!replyMessage) return res.status(400).json({
-            message: 'Reply message not found'
-         })
+        //  if(!replyMessage) return res.status(400).json({
+        //     message: 'Reply message not found'
+        //  })
         }
          let imageUrl 
 

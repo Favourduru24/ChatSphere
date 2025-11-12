@@ -12,7 +12,7 @@ import { createChatService, getSingleChatService, getUserChatService } from "../
           
          const body = createChatSchema.parse(req.body)
           
-         const chat = await createChatService(userId,body)
+         const chat = await createChatService(userId, body)
    
           return res.status(HTTPSTATUS.OK).json({
             message: 'Chat created successfully!',
