@@ -107,7 +107,7 @@ export const initializeSocket = (httpServer: HTTPServer) => {
     }
 
     export const emitNewMessageToChatRoom = (
-      senderId: string, // userId that sent the message ,
+      senderId: string,
       chatId: string,
       message: any
     ) => {
