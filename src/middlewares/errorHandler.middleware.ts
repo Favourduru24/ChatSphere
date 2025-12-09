@@ -88,9 +88,9 @@ export const errorMiddleware = (
 
   if (fields) response.fields = fields;
 
-  // if (ENV.NODE_ENV === "development") {
-  //   response.stack = err.stack;
-  // }
+  if (ENV.NODE_ENV === "development") {
+    response.stack = err.stack;
+  }
 
   res.status(statusCode).json(response);
 };
