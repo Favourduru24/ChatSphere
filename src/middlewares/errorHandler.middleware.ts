@@ -1,13 +1,15 @@
 import { Request, Response, NextFunction } from "express";
+import { ZodError } from "zod";
 import { ENV } from "../config/env.config";
 import { HTTPSTATUS } from "../config/http.config";
 
-// Define a custom Error interface for better typing
+// Custom Error interface
 interface CustomError extends Error {
   statusCode?: number;
   code?: number;
-  errors?: Record<string, { path: string; message: string }>;
+  errors?: Record<string, any>;
   fields?: Record<string, string>;
+  keyValue?: Record<string, any>; // for Mongoose duplicate key
 }
 
 export const errorMiddleware = (
@@ -15,63 +17,80 @@ export const errorMiddleware = (
   req: Request,
   res: Response,
   next: NextFunction
-): void => {
+) => {
 
-  const error: CustomError = {
-    ...err,
-    message: err.message || "Internal Server Error",
-    statusCode: err.statusCode || HTTPSTATUS.INTERNAL_SERVER_ERROR,
-    stack: err.stack,
-  };
+  let statusCode = err.statusCode || 500;
+  let message = err.message || "Internal Server Error";
+  let fields: Record<string, string> | undefined;
 
-  // Switch on known error types
-  switch (true) {
-    case err.name === "CastError":
-      error.message = "Resource not found";
-      error.statusCode = HTTPSTATUS.NOT_FOUND;
-      break;
+  // ZOD VALIDATION ERROR
+  if (err instanceof ZodError) {
+    statusCode = HTTPSTATUS.BAD_REQUEST;
+    message = "Validation failed";
 
-    case err.code === 11000:
-      error.message = "Duplicate field value entered";
-      error.statusCode = HTTPSTATUS.BAD_REQUEST;
-      break;
-
-    case err.name === "ValidationError":
-      error.fields = Object.values(err.errors || {}).reduce(
-        (acc: Record<string, string>, { path, message }) => {
-          acc[path] = message
-            .replace(/Path\s|!|Validation\sfailed:\s?/g, "")
-            .trim();
-          return acc;
-        },
-        {}
-      );
-      error.message = "Validation failed";
-      error.statusCode = HTTPSTATUS.BAD_REQUEST;
-      break;
-
-    case err.name === "JsonWebTokenError":
-      error.message = "Invalid token";
-      error.statusCode = HTTPSTATUS.UNAUTHOURIZED;
-      break;
-
-    case err.name === "TokenExpiredError":
-      error.message = "Token expired";
-      error.statusCode = HTTPSTATUS.UNAUTHOURIZED;
-      break;
+    fields = err.issues.reduce((acc: Record<string, string>, issue) => {
+      const field = issue.path[0] as string;
+      acc[field] = issue.message;
+      return acc;
+    }, {});
   }
 
-  // Prepare response
+  // MONGOOSE CAST ERROR
+  else if (err.name === "CastError") {
+    statusCode = HTTPSTATUS.NOT_FOUND;
+    message = "Resource not found";
+  }
+
+  // MONGOOSE DUPLICATE KEY
+  else if (err.code === 11000 && err.keyValue) {
+    statusCode = HTTPSTATUS.BAD_REQUEST;
+    message = "Duplicate field value entered";
+
+    fields = Object.entries(err.keyValue).reduce(
+      (acc: Record<string, string>, [key, value]) => {
+        acc[key] = `${value} already exists`;
+        return acc;
+      },
+      {}
+    );
+  }
+
+  // MONGOOSE VALIDATION ERROR
+  else if (err.name === "ValidationError") {
+    statusCode = HTTPSTATUS.BAD_REQUEST;
+    message = "Validation failed";
+
+    fields = Object.values(err.errors || {}).reduce(
+      (acc: Record<string, string>, { path, message }: any) => {
+        acc[path] = message;
+        return acc;
+      },
+      {}
+    );
+  }
+
+  // JWT ERRORS
+  else if (err.name === "JsonWebTokenError") {
+    statusCode = HTTPSTATUS.UNAUTHOURIZED;
+    message = "Invalid token";
+  }
+
+  else if (err.name === "TokenExpiredError") {
+    statusCode = HTTPSTATUS.UNAUTHOURIZED;
+    message = "Token expired";
+  }
+
+  // RESPONSE
   const response: Record<string, any> = {
     success: false,
-    error: error.message,
-    ...(error.fields && { fields: error.fields }),
+    message,
   };
 
-  // Include stack trace only in development
-  if (ENV.NODE_ENV === "development") {
-    response.stack = error.stack;
-  }
+  if (fields) response.fields = fields;
 
-  res.status(error.statusCode || 500).json(response);
+  // if (ENV.NODE_ENV === "development") {
+  //   response.stack = err.stack;
+  // }
+
+  res.status(statusCode).json(response);
 };

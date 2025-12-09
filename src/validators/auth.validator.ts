@@ -1,28 +1,27 @@
-import {z} from "zod"
+import { z } from "zod";
 
 export const emailSchema = z
-.string()
-.trim()
-.email()
-.min(2)
+  .string({ required_error: "Email is required" })
+  .trim()
+  .email("Please enter a valid email address")
+  .min(2, "Email must be at least 2 characters long");
 
 export const passwordSchema = z
-.string()
-.trim()
-.min(1)
+  .string({ required_error: "Password is required" })
+  .trim()
+  .min(1, "Password cannot be empty");
 
-export const registerSchema = z
-.object({
-    name: z.string().trim().min(1),
-    email: emailSchema,
-    password: passwordSchema,
-    avatar: z.string().optional(),
-})
+export const registerSchema = z.object({
+  name: z.string().trim().min(1, "Name is required"),
+  email: emailSchema,
+  password: passwordSchema,
+  avatar: z.string().optional(),
+});
 
 export const loginSchema = z.object({
-    email: emailSchema,
-    password: passwordSchema
-})
+  email: emailSchema,
+  password: passwordSchema,
+});
 
-export type RegisterSchemaType = z.infer<typeof registerSchema>
-export type LoginSchemaType = z.infer<typeof loginSchema>
+export type RegisterSchemaType = z.infer<typeof registerSchema>;
+export type LoginSchemaType = z.infer<typeof loginSchema>;
