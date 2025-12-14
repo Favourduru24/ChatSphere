@@ -28,3 +28,27 @@ export const setJwtAuthCookie = ({res, userId}: Cookie) => {
 
 export const clearJwtAuthCookie = (res: Response) => 
     res.clearCookie('accessToken', {path: '/'})
+
+
+// {
+//   "name": "Duru Pristine",
+//   "email":"durupristine@gmail.com",
+//   "password":"guardianp40",
+//   "id1": "6938f675c486d7352f0fd7e3",
+//   "id3": "693e0f6cb328ffcb12831bae"
+//   "id2": "6938f28cc486d7352f0fd7d9"
+// }
+
+// {
+//   "participantId": "6938f675c486d7352f0fd7e3",
+//   "isGroup": false
+// }
+
+
+// {
+//   "participants": ["6938f675c486d7352f0fd7e3", "693e0f6cb328ffcb12831bae"],
+//   "isGroup": true,
+//   "groupName": "Dev Group",
+//   "userId":"6938f28cc486d7352f0fd7d9"
+// }
+

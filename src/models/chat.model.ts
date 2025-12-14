@@ -29,7 +29,7 @@ import mongoose,{Schema, Document} from "mongoose";
         },
         groupName: {
             type: String,
-            required: true
+            // required: true
         },
         createdBy: {
             type: Schema.Types.ObjectId,

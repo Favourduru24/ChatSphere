@@ -10,7 +10,8 @@ import { getUsersService } from "../services/user.service";
           const users = await getUsersService(userId)
 
          return res.status(HTTPSTATUS.OK).json({
-            message: 'Users retrived successfully!'
+            message: 'Users retrived successfully!',
+            users
          })
     }
  )

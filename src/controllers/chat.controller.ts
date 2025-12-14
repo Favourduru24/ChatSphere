@@ -30,7 +30,7 @@ import { createChatService, getSingleChatService, getUserChatService } from "../
          const chats = await getUserChatService(userId)
    
           return res.status(HTTPSTATUS.OK).json({
-            message: 'Chat created successfully!',
+            message: 'Chat fetched successfully!',
             chats
          })
           
@@ -46,7 +46,7 @@ import { createChatService, getSingleChatService, getUserChatService } from "../
          const {chat, messages} = await getSingleChatService(id, userId)
           
           return res.status(HTTPSTATUS.OK).json({
-            message: 'Chat created successfully!',
+            message: 'Chat fetched successfully!',
             chat,
             messages
          })
