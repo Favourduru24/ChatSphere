@@ -1,7 +1,9 @@
 import { Server as HTTPServer } from "http"
 import { Server, type Socket} from "socket.io"
+import cookie from "cookie"
 import { ENV } from "../config/env.config"
 import jwt from "jsonwebtoken"
+// import cookie from "cook"
 import { validateChatParticipant } from "../services/chat.service"
 
  interface AuthenticatedSocket extends Socket{
@@ -23,22 +25,23 @@ export const initializeSocket = (httpServer: HTTPServer) => {
 
     io.use(async (socket: AuthenticatedSocket, next) => {
        try {
-         const rawCookies = socket.handshake.headers.cookie
+        const rawCookies = socket.handshake.headers.cookie
 
-         if(!rawCookies) return next(new Error('Unauthorized!'))
-            
-            const token = rawCookies?.split("=")?.[1]?.trim()
+        console.log('RAW', rawCookies)
 
-        if(!token) return next(new Error('Unauthorized!'))
+        if(!rawCookies) return next(new Error('Unauthorized!')) 
 
-         const decodedToken = jwt.verify(token, ENV.JWT_SECRET) as {
-            userId: string
-         }
+           const token = rawCookies?.split("=")?.[1]?.trim()
 
-           if(!decodedToken) return next(new Error('Unauthorized!'))
+           if(!token) return next(new Error('Unauthorized!')) 
 
-        socket.userId = decodedToken.userId
-        next()
+             const decodedToken = jwt.verify(token, ENV.JWT_SECRET) as { userId: string } 
+
+             if(!decodedToken) return next(new Error('Unauthorized!'))
+
+             socket.userId = decodedToken.userId 
+
+               next()
        } catch (error) {
          next(new Error('Internal server error'))
        }

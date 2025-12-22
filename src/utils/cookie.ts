@@ -21,11 +21,13 @@ export const setJwtAuthCookie = ({res, userId}: Cookie) => {
    return res.cookie("accessToken", token, {
     maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
-    secure: ENV.NODE_ENV === 'production' ? true : false,
-    sameSite: ENV.NODE_ENV === 'production' ? true : false
+    secure: false,
+    sameSite: "none"
    })
 }
 
+// ENV.NODE_ENV === 'production' ? true : 
+// ENV.NODE_ENV === "production" ? "none" :
 export const clearJwtAuthCookie = (res: Response) => 
     res.clearCookie('accessToken', {path: '/'})
 

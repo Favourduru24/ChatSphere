@@ -84,7 +84,7 @@ export const createChatService = async (
         participants: {
             $in: [userId]
         }
-    })
+    }).populate('participants', 'name avatar')
 
     if(!chat) throw new Error('Chat not found or you are not authorized to view this chat!')
 

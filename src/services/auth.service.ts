@@ -27,7 +27,7 @@ export const loginService = async (body: LoginSchemaType) : Promise<UserDocument
 
     const {email, password} = body
      
-    const user = await UserModel.findOne({email})
+    const user = await UserModel.findOne({email}).select('-password')
 
     if (!user) {
     throw Object.assign(new Error("Email not found!"), { statusCode: HTTPSTATUS.NOT_FOUND });

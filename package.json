@@ -4,15 +4,16 @@
   "main": "src/index.js",
   "module": "commonjs",
   "scripts": {
-     "dev": "nodemon src/index.js",
-     "start": "nodemon src/index.js"
+    "dev": "nodemon src/index.js",
+    "start": "nodemon src/index.js"
   },
   "author": "",
   "license": "ISC",
   "description": "",
-   "dependencies": {
+  "dependencies": {
     "bcryptjs": "^3.0.2",
     "cloudinary": "^2.7.0",
+    "cookie": "^1.1.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
@@ -39,4 +40,5 @@
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
-}}
+  }
+}
