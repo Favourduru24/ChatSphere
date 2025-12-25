@@ -1,3 +1,4 @@
+
 import passport from "passport";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import { ENV } from "./env.config";
@@ -8,15 +9,14 @@ passport.use(
     {
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req) => {
-          const token = req?.cookies?.accessToken;
-           if(!token) throw new Error('No token found!')
-
-          return token || null;
+          const token = req.cookies.accessToken;
+          if (!token) throw new Error('No token found!')
+          return token;
         },
       ]),
       secretOrKey: ENV.JWT_SECRET,
+      audience: ["user"],
       algorithms: ["HS256"],
-      // remove audience unless required
     },
     async ({ userId }, done) => {
       try {

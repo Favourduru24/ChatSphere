@@ -1,4 +1,4 @@
-import { emitNewChatToParticipant } from "../lib/socket"
+import { emitNewChatToParticpants } from "../lib/socket"
 import ChatModel from "../models/chat.model"
 import MessageModel from "../models/message.model"
 import UserModel from "../models/user.model"
@@ -58,7 +58,7 @@ export const createChatService = async (
         return p._id?.toString()
     })
 
-    emitNewChatToParticipant(participantIdStrings, populatedChat)
+    emitNewChatToParticpants(participantIdStrings, populatedChat)
 
     return chat
 }

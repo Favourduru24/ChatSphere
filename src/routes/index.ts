@@ -5,7 +5,7 @@ import userRoutes from "./user.route";
 import { passportAuthenticateJwt } from "../config/passport.config";
 
 const router = Router()
-.use(passportAuthenticateJwt)
+// .use(passportAuthenticateJwt)
 router.use('/auth', authRoutes)
 router.use('/chat', chatRoutes)
 router.use('/user', userRoutes)
