@@ -1,3 +1,4 @@
+import cloudinary from "../config/cloudinary.config"
 import { emitNewChatToParticpants } from "../lib/socket"
 import ChatModel from "../models/chat.model"
 import MessageModel from "../models/message.model"
@@ -10,21 +11,31 @@ export const createChatService = async (
         isGroup?: boolean | undefined,
         participants?: string[] | undefined,
         groupName?: string | undefined,
+        groupAvatar?: string | undefined
     }
 ) => {   
-     const {participantId, participants, groupName, isGroup} = body
+     const {participantId, participants, groupName, isGroup, groupAvatar} = body
 
     let chat 
     let allParticipantIds: string[] = []
 
     if(isGroup && participants?.length && groupName) {
+         
+        let imageUrl 
+
+                if(groupAvatar?.length) {
+                 const uploadRes = await cloudinary.uploader.upload(groupAvatar)
+                 imageUrl = uploadRes.secure_url
+               }
+
         allParticipantIds = [userId, ...participants]
 
         chat = await ChatModel.create({
            participants: allParticipantIds,
            isGroup: true,
            groupName,
-           createdBy: userId
+           createdBy: userId,
+           groupAvatar: imageUrl
         })
     } else if(participantId) {
          const otherUser = await UserModel.findById(participantId)

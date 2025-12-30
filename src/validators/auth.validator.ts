@@ -23,5 +23,9 @@ export const loginSchema = z.object({
   password: passwordSchema,
 });
 
+export const updateUserAvatarSchema = z.object({
+    avatar: z.string().trim(),
+})
+
 export type RegisterSchemaType = z.infer<typeof registerSchema>;
 export type LoginSchemaType = z.infer<typeof loginSchema>;
