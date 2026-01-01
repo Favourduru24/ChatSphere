@@ -7,6 +7,7 @@ import mongoose,{Schema, Document} from "mongoose";
      groupName: string,
      groupAvatar?: string | null,
      createdBy: mongoose.Types.ObjectId,
+     isAiChat: boolean,
      createdAt: Date,
      updatedAt: Date
     }
@@ -17,9 +18,29 @@ import mongoose,{Schema, Document} from "mongoose";
         isGroup: {type: Boolean, default: false},
         groupName: {type: String},// required: true,
         groupAvatar: {type: String, default: null},
-        createdBy: {type: Schema.Types.ObjectId, ref: 'User', required: true}
+        createdBy: {type: Schema.Types.ObjectId, ref: 'User', required: true},
+        isAiChat: {
+            type: Boolean,
+            default: false
+        }
     }, {
          timestamps: true
+    })
+
+    chatSchema.pre("save", async function (next) {
+       if(this.isNew) {
+         const User = mongoose.model("User")
+         const participants = await User.find({
+            _id: {$in: this.participants},
+            isAI: true 
+         })
+
+         if(participants?.length > 0){
+             this.isAiChat = true
+         }
+       } 
+
+       next()
     })
 
     const ChatModel = mongoose.model<ChatDocument>('Chat', chatSchema)

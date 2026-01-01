@@ -49,7 +49,7 @@ export const createChatService = async (
                 $all: allParticipantIds,
                 $size: 2
              }
-        }).populate("participants", "name avatar")
+        }).populate("participants", "name avatar isAI")
 
     if(existingChat) return existingChat
 
@@ -63,7 +63,7 @@ export const createChatService = async (
 
     //implement web socket
 
-    const populatedChat = await chat?.populate("participants", "name avatar")
+    const populatedChat = await chat?.populate("participants", "name avatar isAI")
 
     const participantIdStrings = populatedChat?.participants?.map((p) => {
         return p._id?.toString()
@@ -82,7 +82,7 @@ export const createChatService = async (
           path: "lastMessage",
           populate: {
             path: 'sender',
-            select: "name avatar"
+            select: "name avatar isAI"
           }
       })
       .sort({updatedAt: -1})
@@ -95,18 +95,18 @@ export const createChatService = async (
         participants: {
             $in: [userId]
         }
-    }).populate('participants', 'name avatar')
+    }).populate('participants', 'name avatar isAI')
 
     if(!chat) throw new Error('Chat not found or you are not authorized to view this chat!')
 
     const messages = await MessageModel.find({chatId})
-    .populate("sender", "name avatar")
+    .populate("sender", "name avatar isAI")
 .populate({
           path: "replyTo",
           select: "content image sender",
           populate: {
              path: "sender",
-             select: "name avatar"
+             select: "name avatar isAI"
           },
          }).sort({createdAt: 1})
 

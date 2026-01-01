@@ -15,8 +15,10 @@ export const registerService = async (body: RegisterSchemaType): Promise<UserDoc
   const hashedPassword = await hashValue(password, 10);
 
   const newUser = new UserModel({
-    ...body,
+    name: body.name,
     password: hashedPassword,
+    email: body.email,
+    avatar: body.avatar
   });
 
   await newUser.save();
@@ -32,12 +34,13 @@ export const loginService = async (body: LoginSchemaType) : Promise<UserDocument
     if (!user) {
     throw Object.assign(new Error("Email not found!"), { statusCode: HTTPSTATUS.NOT_FOUND });
   }
-
-      
+   
+  if(user?.password){
     const isPasswordValid = await compareValue(password, user.password);
-    
-  if (!isPasswordValid) {
+
+    if (!isPasswordValid) {
     throw Object.assign(new Error("Invalid password!"), { statusCode: HTTPSTATUS.BAD_REQUEST });
+  }
   }
 
   return user;
