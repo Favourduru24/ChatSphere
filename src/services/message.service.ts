@@ -8,7 +8,7 @@ import {createGoogleGenerativeAI} from "@ai-sdk/google"
 import { ENV } from "../config/env.config"
 import UserModel from "../models/user.model"
 import { ModelMessage, streamText } from "ai"
-
+      
 const google = createGoogleGenerativeAI({
   apiKey: ENV.GOOGLE_GENERATIVE_AI_API_KEY,
 })
@@ -30,7 +30,7 @@ export const sendMessageService = async (userId: string,
             $in: [userId]
         }
       })
-      
+
       if(!chat) throw new Error("Chat not found or unauthorized")
 
     if(replyToId) {
