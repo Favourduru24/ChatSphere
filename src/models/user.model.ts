@@ -5,6 +5,7 @@ export interface UserDocument extends Document {
     email?: string,
     password?: string,
     isAI: boolean,
+    isOAuthUser: boolean,
     avatar?: string | null,
     createdAt: Date,
     updatedAt: Date
@@ -16,10 +17,11 @@ export interface UserDocument extends Document {
         return !this.isAI
      }, trim: true, lowercase: true},
      password: {type: String, default: null, required: function(this: UserDocument) {
-        return !this.isAI
+        return !this.isAI || !this.isOAuthUser
      },},
      avatar: {type: String, default: null},
-     isAI: {type: Boolean, default: false}
+     isAI: {type: Boolean, default: false},
+     isOAuthUser: {type: Boolean, default: false}
  },{
     timestamps: true,
  })
