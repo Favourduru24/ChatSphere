@@ -1,5 +1,4 @@
 import "dotenv/config";
-import path from "path";
 import express, { Request, Response } from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -13,6 +12,7 @@ import connectDatabase from "./config/database.config";
 import { initializeSocket } from "./lib/socket";
 import routes from "./routes";
 const NODE_ENV = ENV.NODE_ENV || 'production';
+const PORT = ENV.PORT || 8000;
 
 import "./config/passport.config";
 
@@ -60,7 +60,7 @@ app.use("/api", routes);
 
 app.use(errorMiddleware);
 
-server.listen(ENV.PORT, async () => {
+server.listen(PORT, async () => {
   await connectDatabase();
-  console.log(`Server running on port ${ENV.PORT} in ${NODE_ENV} mode`);
+  console.log(`Server running on port ${PORT} in ${NODE_ENV} mode`);
 });
