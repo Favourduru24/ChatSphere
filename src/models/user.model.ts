@@ -16,9 +16,13 @@ export interface UserDocument extends Document {
      email: {type: String, unique: true, required: function(this: UserDocument) {
         return !this.isAI
      }, trim: true, lowercase: true},
-     password: {type: String, default: null, required: function(this: UserDocument) {
-        return !this.isAI || !this.isOAuthUser
-     },},
+     password: {
+      type: String,
+      default: null,
+      required: function (this: UserDocument) {
+        return !this.isAI && !this.isOAuthUser
+      }
+    },
      avatar: {type: String, default: null},
      isAI: {type: Boolean, default: false},
      isOAuthUser: {type: Boolean, default: false}

@@ -119,10 +119,6 @@ export const initializeSocket = (httpServer: HTTPServer) => {
           onlineUsers.map((u) => u.userId)
         );
 
-        console.log("socket disconnected", {
-          userId,
-          socketId,
-        });
       }
     });
   });

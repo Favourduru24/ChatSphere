@@ -12,6 +12,7 @@ import { HTTPSTATUS } from "./config/http.config";
 import connectDatabase from "./config/database.config";
 import { initializeSocket } from "./lib/socket";
 import routes from "./routes";
+const NODE_ENV = ENV.NODE_ENV || 'production';
 
 import "./config/passport.config";
 
@@ -46,20 +47,20 @@ app.get(
 app.use("/api", routes);
 // app.get('/success', googleAuthCallbackController)
 
-if (ENV.NODE_ENV === "production") {
-  const clientPath = path.resolve(__dirname, "../../client/dist");
+// if (ENV.NODE_ENV === "production") {
+//   const clientPath = path.resolve(__dirname, "../../client/dist");
 
-  //Serve static files
-  app.use(express.static(clientPath));
+//   //Serve static files
+//   app.use(express.static(clientPath));
 
-  app.get(/^(?!\/api).*/, (req: Request, res: Response) => {
-    res.sendFile(path.join(clientPath, "index.html"));
-  });
-}
+//   app.get(/^(?!\/api).*/, (req: Request, res: Response) => {
+//     res.sendFile(path.join(clientPath, "index.html"));
+//   });
+// }
 
 app.use(errorMiddleware);
 
 server.listen(ENV.PORT, async () => {
   await connectDatabase();
-  console.log(`Server running on port ${ENV.PORT} in ${ENV.NODE_ENV} mode`);
+  console.log(`Server running on port ${ENV.PORT} in ${NODE_ENV} mode`);
 });
