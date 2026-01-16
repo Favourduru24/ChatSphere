@@ -4,8 +4,8 @@ import express, { Request, Response } from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import http from "http";
-import { errorMiddleware } from "./middlewares/errorHandler.middleware"
 import passport from "passport";
+import { errorMiddleware } from "./middlewares/errorHandler.middleware"
 import { ENV } from "./config/env.config";
 import { asyncHandler } from "./middlewares/asyncHandler.middleware";
 import { HTTPSTATUS } from "./config/http.config";
@@ -44,6 +44,7 @@ app.get(
 );
 
 app.use("/api", routes);
+// app.get('/success', googleAuthCallbackController)
 
 if (ENV.NODE_ENV === "production") {
   const clientPath = path.resolve(__dirname, "../../client/dist");

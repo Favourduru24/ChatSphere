@@ -1,8 +1,8 @@
-
 import passport from "passport";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
-import { ENV } from "./env.config";
 import { findByIdUserService } from "../services/user.service";
+import { ENV } from "./env.config";
+import { HTTPSTATUS } from "./http.config";
 
 passport.use(
   new JwtStrategy(
@@ -10,7 +10,7 @@ passport.use(
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req) => {
           const token = req.cookies.accessToken;
-          if (!token) throw new Error('No token found!')
+          if (!token) throw Object.assign(new Error("Token not found!"), { statusCode: HTTPSTATUS.BAD_REQUEST });
           return token;
         },
       ]),

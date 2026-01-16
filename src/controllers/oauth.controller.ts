@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import { getGoogleClient } from "../utils/google.strategy";
-import { HTTPSTATUS } from "../config/http.config";
 import { asyncHandler } from "../middlewares/asyncHandler.middleware";
 import { googleAuthCallbackHandlerService } from "../services/oauth.service";
-import { setJwtAuthCookie } from "../utils/cookie";
+import {setJwtAuthCookie } from "../utils/cookie";
+import { ENV } from "../config/env.config";
 
 export const googleAuthStartController = asyncHandler(async (req: Request, res: Response) => {
 
@@ -18,25 +18,22 @@ export const googleAuthStartController = asyncHandler(async (req: Request, res: 
     return res.redirect(url)
 })
 
-export const googleAuthCallbackController = asyncHandler (async (req: Request, res: Response) => {
-    const code = req.query.code as string | undefined
+export const googleAuthCallbackController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const code = req.query.code as string | undefined;
 
-    if(!code) {
-        return res.status(400).json({
-            message: 'Missing code in callback'
-        })
+    if (!code) {
+      return res.status(400).json({ message: "Missing code in callback" });
     }
 
-     const user = await googleAuthCallbackHandlerService(code)
+    const user = await googleAuthCallbackHandlerService(code);
 
-     const userId = user._id as string
-
-     return setJwtAuthCookie({
-             res,
-             userId
-         }).status(HTTPSTATUS.OK).json({
-              message: 'User login successfully!',
-              user
-         })
-    })
-
+    // Generate JWT
+    setJwtAuthCookie({
+      res,
+      userId: user._id as string,
+    });
+    // Redirect to frontend with token in URL
+    return res.redirect(`${ENV.FRONTEND_ORIGIN}/chat`);
+  }
+);
