@@ -19,8 +19,8 @@ export const setJwtAuthCookie = ({ res, userId }: Cookie) => {
   return res.cookie("accessToken", token, {
     maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
-    secure: ENV.NODE_ENV === "production" ? true : false,
-    sameSite: ENV.NODE_ENV === "production" ? "strict" : "lax",
+    secure: true,
+    sameSite: "none",
   });
 };
 
